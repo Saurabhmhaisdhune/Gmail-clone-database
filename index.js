@@ -25,23 +25,23 @@ app.use(cors())
 app.use(express.json());
 
 app.get('/', function (request, response) {
-  response.send("hello this a home page of all movies data")
+  response.send("hello this a home page of all data")
 });
 
-app.get('/movies', async function (request, response) {
-  const movies = await client.db("movies").collection("movie").find({}).toArray();
+app.get('/gmail_data', async function (request, response) {
+  const movies = await client.db("gmail").collection("primary").find({}).toArray();
  response.send(movies)
 });
 
-app.put("/movies/:id", async function (request, response) {
+app.put("/gmail_data/:id", async function (request, response) {
 
   const { id }=request.params;
   console.log(request.params, id);
   const data= request.body;
 
   const result=await client
-  .db("movies")
-  .collection("movie")
+  .db("gmail")
+  .collection("primary")
   .updateOne({ id : id },{$set:data});
 
   result.modifiedCount > 0
@@ -49,14 +49,14 @@ app.put("/movies/:id", async function (request, response) {
   :response.status(400).send({msg:"movie not found"});
 });
 
-app.delete("/movies/:id", async function (request, response) {
+app.delete("/gmail_data/:id", async function (request, response) {
 
   const { id }=request.params;
   console.log(request.params, id);
 
   const result=await client
-  .db("movies")
-  .collection("movie")
+  .db("gmail")
+  .collection("primary")
   .deleteOne({ id : id });
 
   result.deletedCount > 0
@@ -64,9 +64,9 @@ app.delete("/movies/:id", async function (request, response) {
   :response.status(401).send({msg:"movie not found"});
 });
 
-app.post('/movies', async function (request, response) {
+app.post('/gmail_data', async function (request, response) {
   const data = request.body;
-  const result = await client.db("movies").collection("movie").insertOne(data);
+  const result = await client.db("gmail").collection("primary").insertOne(data);
   response.send(result);
  });
 
