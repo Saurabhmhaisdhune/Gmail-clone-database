@@ -2,6 +2,9 @@ import { MongoClient } from "mongodb";
 import express from "express";
 import dotenv from "dotenv";
 import cors from 'cors';
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import {auth} from './middleware/auth.js';
 
 dotenv.config();
 
@@ -70,5 +73,63 @@ app.post('/gmail_data', async function (request, response) {
   response.send(result);
  });
 
+//for sign up process
+app.get('/users/signup',auth, async function (request, response) {
+  const data = await client.db("gmail").collection("usersignup").find({}).toArray();
+ response.send(data)
+});
+
+//signup process
+app.post('/users/signup', async function (request, response) {
+  const {username, password} = request.body; 
+  const userfromdb=await client
+  .db("gmail")
+  .collection("usersignup")
+  .findOne({username:username});
+  console.log(userfromdb);
+  if(userfromdb){
+    response.status(400).send({msg:'USER ALREADY EXISTS'})
+  }
+  else if(password.length<8){
+    response.status(400).send({msg:"password must be longer"});
+  }
+  else{
+    const hashedPassword=await genHashedPassword(password);
+    console.log(password, hashedPassword);
+    const result=await client.db("gmail").collection("usersignup").insertOne({username:username, password:hashedPassword});
+    response.send(result);
+  }
+ });
+
+ //login process
+app.post('/users/login', async function (request, response) {
+  const {username, password} = request.body; 
+  const userfromdb=await client
+  .db("gmail")
+  .collection("usersignup")
+  .findOne({username:username});
+  console.log(userfromdb);
+  if(!userfromdb){
+    response.status(401).send({msg:'invalid credentials'})
+  }else{
+    const storePassword=userfromdb.password;
+    const isPasswordMatch= await bcrypt.compare(password,storePassword);
+    console.log(isPasswordMatch);
+    if(isPasswordMatch){
+      const token=jwt.sign({id:userfromdb._id},process.env.SECRET_KEY);
+      response.send({msg:"login successful",token:token});
+    }else{
+      response.status(401).send({msg:"invalid credentials"});
+    }
+  }
+ });
 
 app.listen(PORT,()=>console.log(`APP is running ${PORT}`))
+
+async function genHashedPassword(password){
+  const NO_OF_ROUNDS=10;
+  const salt = await bcrypt.genSalt(NO_OF_ROUNDS);
+  const hashedPassword = await bcrypt.hash(password,salt);
+  return hashedPassword
+}
+
