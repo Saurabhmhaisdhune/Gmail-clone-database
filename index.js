@@ -36,6 +36,13 @@ app.get('/gmail_data', async function (request, response) {
  response.send(movies)
 });
 
+app.get("/gmail_data/:name", async function (request, response) {
+  const { name }=request.params;
+  console.log(request.params, name);
+  const result = await client.db("gmail").collection("primary").findOne({name:name}).toArray();
+ response.send(result)
+});
+
 app.put("/gmail_data/:id", async function (request, response) {
 
   const { id }=request.params;
