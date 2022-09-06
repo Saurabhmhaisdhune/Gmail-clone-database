@@ -52,7 +52,7 @@ app.put("/gmail_data/:id", async function (request, response) {
   :response.status(400).send({msg:"movie not found"});
 });
 
-app.delete("/gmail_data/:id", async function (request, response) {
+app.delete("/gmail_data/:name", async function (request, response) {
 
   const { id }=request.params;
   console.log(request.params, id);
