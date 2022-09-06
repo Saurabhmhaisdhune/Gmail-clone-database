@@ -72,13 +72,13 @@ app.post('/gmail_data', async function (request, response) {
   response.send(result);
  });
 
-//for sign up process
+//for sign up processs
 app.get('/users/signup', async function (request, response) {
   const data = await client.db("gmail").collection("usersignup").find({}).toArray();
  response.send(data)
 });
 
-//signup process
+//signup processs
 app.post('/users/signup', async function (request, response) {
   const {username, password} = request.body; 
   const userfromdb=await client
