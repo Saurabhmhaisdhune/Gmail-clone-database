@@ -53,9 +53,8 @@ app.put("/gmail_data/:id", async function (request, response) {
 });
 
 app.delete("/gmail_data/:name", async function (request, response) {
-
   const { name }=request.params;
-  console.log(request.params, id);
+  console.log(request.params, name);
 
   const result=await client
   .db("gmail")
