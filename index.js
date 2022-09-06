@@ -54,13 +54,13 @@ app.put("/gmail_data/:id", async function (request, response) {
 
 app.delete("/gmail_data/:name", async function (request, response) {
 
-  const { id }=request.params;
+  const { name }=request.params;
   console.log(request.params, id);
 
   const result=await client
   .db("gmail")
   .collection("primary")
-  .deleteOne({ id : id });
+  .deleteOne({name : name });
 
   result.deletedCount > 0
   ?response.send({msg:"movie successfully deleted"})
