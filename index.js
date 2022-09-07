@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import cors from 'cors';
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import {auth} from './middleware/auth.js';
+// import {auth} from './middleware/auth.js';
 
 dotenv.config();
 
@@ -87,12 +87,12 @@ app.get('/users/signup', async function (request, response) {
 //signup processs
 app.post('/users/signup', async function (request, response) {
   const {username, password} = request.body; 
-  const userfromdb=await client
+  const userFromdb=await client
   .db("gmail")
   .collection("usersignup")
   .findOne({username:username});
-  console.log(userfromdb);
-  if(userfromdb){
+  console.log(userFromdb);
+  if(userFromdb){
     response.status(400).send({msg:'USER ALREADY EXISTS'})
   }
   else if(password.length<8){
@@ -109,22 +109,23 @@ app.post('/users/signup', async function (request, response) {
  //login process
 app.post('/users/login', async function (request, response) {
   const {username, password} = request.body; 
-  const userfromdb=await client
+  const userFromdb=await client
   .db("gmail")
   .collection("usersignup")
   .findOne({username:username});
-  console.log(userfromdb);
-  if(!userfromdb){
-    response.status(401).send({msg:'invalid credentials'})
+  console.log(userFromdb);
+
+  if(!userFromdb){
+    response.status(401).send({msg:'invalid credentials'});
   }else{
-    const storePassword=userfromdb.password;
+    const storePassword=userFromdb.password;
     const isPasswordMatch= await bcrypt.compare(password,storePassword);
     console.log(isPasswordMatch);
     if(isPasswordMatch){
-      const token=jwt.sign({id:userfromdb._id},process.env.SECRET_KEY);
+      const token=jwt.sign({id:userFromdb._id},process.env.SECRET_KEY);
       response.send({msg:"login successful",token:token});
     }else{
-      response.status(401).send({msg:"invalid credentials"});
+      response.status(401).send({msg:"Invalid Credentials"});
     }
   }
  });
