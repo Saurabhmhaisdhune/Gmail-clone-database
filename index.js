@@ -96,7 +96,7 @@ app.post('/users/signup', async function (request, response) {
     response.status(400).send({msg:'USER ALREADY EXISTS'})
   }
   else if(password.length<8){
-    response.status(400).send({msg:"password must be longer"});
+    response.status(402).send({msg:"password must be longer"});
   }
   else{
     const hashedPassword=await genHashedPassword(password);
@@ -121,6 +121,7 @@ app.post('/users/login', async function (request, response) {
     const storePassword=userFromdb.password;
     const isPasswordMatch= await bcrypt.compare(password,storePassword);
     console.log(isPasswordMatch);
+    
     if(isPasswordMatch){
       const token=jwt.sign({id:userFromdb._id},process.env.SECRET_KEY);
       response.send({msg:"login successful",token:token});
