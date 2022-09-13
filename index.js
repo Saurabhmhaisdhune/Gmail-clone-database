@@ -101,7 +101,7 @@ app.post('/users/signup', async function (request, response) {
   else{
     const hashedPassword=await genHashedPassword(password);
     console.log(password, hashedPassword);
-    const result=await client.db("gmail").collection("usersignup").insertOne({username:username, password:hashedPassword});
+    const result=await client.db("gmail").collection("usersignup").insertOne({fname:fname,username:username, password:hashedPassword});
     response.send(result);
   }
  });
